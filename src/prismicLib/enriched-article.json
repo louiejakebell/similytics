@@ -1,0 +1,10 @@
+{
+  "title": "Build a Next.js Blog: A Step-by-Step Guide",
+  "summary": "This guide shows how to build a blog with Next.js and Prismic using Slice Machine, Tailwind CSS, and dynamic routing.",
+  "category": "Web",
+  "takeaways": [
+    "Use Slice Machine to model structured page types and slices",
+    "Set up Tailwind CSS and integrate with Next.js for styling",
+    "Configure routes and components to dynamically render content from Prismic"
+  ]
+}

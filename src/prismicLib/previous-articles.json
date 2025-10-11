@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Improving Accessibility with Semantic HTML",
+    "summary": "This article discusses strategies and tools for improving accessibility with semantic html.",
+    "category": "Frontend",
+    "takeaways": [
+      "Understand the key concepts of improving accessibility with semantic html",
+      "Apply best practices for frontend tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Mastering CSS Grid Layout",
+    "summary": "This article discusses strategies and tools for mastering css grid layout.",
+    "category": "Frontend",
+    "takeaways": [
+      "Understand the key concepts of mastering css grid layout",
+      "Apply best practices for frontend tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Speeding Up Time-to-Interactive on Large SPAs",
+    "summary": "This article discusses strategies and tools for speeding up time-to-interactive on large spas.",
+    "category": "Performance",
+    "takeaways": [
+      "Understand the key concepts of speeding up time-to-interactive on large spas",
+      "Apply best practices for performance tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Building a SvelteKit Marketing Site",
+    "summary": "This guide explains how to build a scalable marketing site using SvelteKit through structured content modeling, reusable components, and team collaboration strategies.",
+    "category": "CMS",
+    "takeaways": [
+      "Structure content types to support reusable pages",
+      "Design flexible components for non-developers to assemble pages",
+      "Enable teams to publish and iterate quickly without code changes"
+    ]
+  },
+  {
+    "title": "Efficient Lazy Loading Strategies",
+    "summary": "This article discusses strategies and tools for efficient lazy loading strategies.",
+    "category": "Performance",
+    "takeaways": [
+      "Understand the key concepts of efficient lazy loading strategies",
+      "Apply best practices for performance tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Reducing Bundle Size with Code Splitting",
+    "summary": "This article discusses strategies and tools for reducing bundle size with code splitting.",
+    "category": "Performance",
+    "takeaways": [
+      "Understand the key concepts of reducing bundle size with code splitting",
+      "Apply best practices for performance tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Debugging with Chrome DevTools Tips",
+    "summary": "This article discusses strategies and tools for debugging with chrome devtools tips.",
+    "category": "DevTools",
+    "takeaways": [
+      "Understand the key concepts of debugging with chrome devtools tips",
+      "Apply best practices for devtools tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Automating Frontend Workflows with Vite",
+    "summary": "This article discusses strategies and tools for automating frontend workflows with vite.",
+    "category": "DevTools",
+    "takeaways": [
+      "Understand the key concepts of automating frontend workflows with vite",
+      "Apply best practices for devtools tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "Integrating LLMs in React Apps",
+    "summary": "This article discusses strategies and tools for integrating llms in react apps.",
+    "category": "AI",
+    "takeaways": [
+      "Understand the key concepts of integrating llms in react apps",
+      "Apply best practices for ai tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  },
+  {
+    "title": "How AI Improves Dev Experience",
+    "summary": "This article discusses strategies and tools for how ai improves dev experience.",
+    "category": "AI",
+    "takeaways": [
+      "Understand the key concepts of how ai improves dev experience",
+      "Apply best practices for ai tasks",
+      "Use modern tools and libraries to improve outcomes"
+    ]
+  }
+]
