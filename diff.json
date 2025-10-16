@@ -1,3 +1,10 @@
 {
-  "changed": {}
+  "changed": {
+    "similarTo": {
+      "reason": {
+        "before": "The new article focuses on building a blog using Next.js, while the most similar article discusses building a marketing site using SvelteKit. Both articles share a common theme of creating web applications using modern frameworks. They target a similar audience of developers interested in building structured and dynamic web content. Additionally, both articles emphasize the importance of structured content modeling and reusable components, which aligns with the new article's focus on using Slice Machine and Tailwind CSS for styling and dynamic routing. The technical concepts of structuring content and creating reusable components are relevant in both contexts, making them semantically similar.",
+        "after": "The new article focuses on building a blog using Next.js, while the most similar article discusses building a marketing site with SvelteKit. Both articles share a common theme of web development and involve structured content modeling and reusable components. They target a similar audience of developers looking to create dynamic web applications. Although the technologies differ (Next.js vs. SvelteKit), the core concepts of structuring content and creating scalable applications align closely, making it the most semantically similar article."
+      }
+    }
+  }
 }

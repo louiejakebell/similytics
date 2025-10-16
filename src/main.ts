@@ -3,9 +3,6 @@ import OpenAI from "openai";
 import { readFileFromCloud } from "./prismicLib/readFileFromCloud.js";
 import { writeFileToCloud } from "./prismicLib/writeFileToCloud.js";
 
-/**
- * Article structure without the similarTo field
- */
 interface Article {
   readonly title: string;
   readonly summary: string;
@@ -13,9 +10,6 @@ interface Article {
   readonly takeaways: readonly string[];
 }
 
-/**
- * Complete enriched article structure with similarTo field
- */
 interface EnrichedArticle extends Article {
   readonly similarTo: {
     readonly title: string | null;
@@ -23,9 +17,6 @@ interface EnrichedArticle extends Article {
   };
 }
 
-/**
- * Diff structure showing changes between two outputs
- */
 interface Diff {
   readonly changed: Record<
     string,
@@ -34,24 +25,22 @@ interface Diff {
   >;
 }
 
-/**
- * OpenAI response for article similarity
- */
 interface SimilarityAnalysis {
   readonly title: string | null;
   readonly reason: string;
 }
 
-/**
- * Retries an async operation with exponential backoff.
- * Handles partial data by validating JSON parsing.
- */
-const retryWithBackoff = async <T>(
-  operation: () => Promise<T>,
+const retryWithBackoff = async <T>({
+  operation,
   maxRetries = 5,
   baseDelay = 1000,
-  validator?: (result: T) => boolean
-): Promise<T> => {
+  validator,
+}: {
+  operation: () => Promise<T>;
+  maxRetries?: number;
+  baseDelay?: number;
+  validator?: (result: T) => boolean;
+}): Promise<T> => {
   let lastError: Error | undefined;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -73,20 +62,17 @@ const retryWithBackoff = async <T>(
 
       const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
       console.log(
-        `Attempt ${attempt + 1} failed: ${lastError.message}. Retrying in ${Math.round(delay)}ms...`
+        `Attempt ${attempt + 1} failed: ${lastError.message}. Retrying in ${Math.round(delay)}ms...`,
       );
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
   throw new Error(
-    `Operation failed after ${maxRetries} attempts: ${lastError?.message}`
+    `Operation failed after ${maxRetries} attempts: ${lastError?.message}`,
   );
 };
 
-/**
- * Validates that a string is valid JSON and can be parsed
- */
 const isValidJson = (data: string): boolean => {
   try {
     JSON.parse(data);
@@ -96,38 +82,30 @@ const isValidJson = (data: string): boolean => {
   }
 };
 
-/**
- * Reads and parses a JSON file from the cloud with retry logic
- */
 const readJsonFromCloud = async <T>(path: string): Promise<T> => {
-  const data = await retryWithBackoff(
-    () => readFileFromCloud(path),
-    5,
-    1000,
-    isValidJson
-  );
+  const data = await retryWithBackoff({
+    operation: () => readFileFromCloud(path),
+    validator: isValidJson,
+  });
   return JSON.parse(data) as T;
 };
 
-/**
- * Writes JSON data to the cloud with retry logic
- */
-const writeJsonToCloud = async (
-  path: string,
-  data: unknown
-): Promise<void> => {
+const writeJsonToCloud = async (path: string, data: unknown): Promise<void> => {
   const jsonString = JSON.stringify(data, null, 2);
-  await retryWithBackoff(() => writeFileToCloud(path, jsonString), 5, 1000);
+  await retryWithBackoff({
+    operation: () => writeFileToCloud(path, jsonString),
+  });
 };
 
-/**
- * Uses OpenAI to find the most semantically similar article
- */
-const findSimilarArticle = async (
-  article: Article,
-  previousArticles: readonly Article[],
-  openai: OpenAI
-): Promise<SimilarityAnalysis> => {
+const findSimilarArticle = async ({
+  article,
+  previousArticles,
+  openai,
+}: {
+  readonly article: Article;
+  readonly previousArticles: readonly Article[];
+  readonly openai: OpenAI;
+}): Promise<SimilarityAnalysis> => {
   const prompt = `You are an expert at analyzing semantic similarity between articles.
 
 Given this NEW article:
@@ -143,7 +121,7 @@ ${previousArticles
 ${idx + 1}. Title: "${prev.title}"
    Summary: ${prev.summary}
    Category: ${prev.category}
-   Takeaways: ${prev.takeaways.join(", ")}`
+   Takeaways: ${prev.takeaways.join(", ")}`,
   )
   .join("\n")}
 
@@ -183,56 +161,60 @@ Respond in JSON format with:
   return JSON.parse(content) as SimilarityAnalysis;
 };
 
-/**
- * Generates a diff between two enriched articles
- */
-const generateDiff = (
-  oldOutput: EnrichedArticle,
-  newOutput: EnrichedArticle
-): Diff => {
+const generateDiff = ({
+  output,
+  newOutput,
+}: {
+  output: EnrichedArticle;
+  newOutput: EnrichedArticle;
+}): Diff => {
   const changed: Diff["changed"] = {};
 
   const primitiveFields = ["title", "summary", "category"] as const;
   for (const field of primitiveFields) {
-    if (oldOutput[field] !== newOutput[field]) {
+    if (output[field] !== newOutput[field]) {
       changed[field] = {
-        before: oldOutput[field],
+        before: output[field],
         after: newOutput[field],
       };
     }
   }
 
-  const oldTakeaways = oldOutput.takeaways;
-  const newTakeaways = newOutput.takeaways;
+  const { takeaways } = output;
+  const { takeaways: newTakeaways } = newOutput;
   if (
-    oldTakeaways.length !== newTakeaways.length ||
-    !oldTakeaways.every((val, idx) => val === newTakeaways[idx])
+    takeaways.length !== newTakeaways.length ||
+    !takeaways.every((val, idx) => val === newTakeaways[idx])
   ) {
     changed.takeaways = {
-      before: oldTakeaways,
+      before: takeaways,
       after: newTakeaways,
     };
   }
 
-  const oldSimilar = oldOutput.similarTo;
-  const newSimilar = newOutput.similarTo;
+  const {
+    similarTo: { title, reason },
+  } = output;
+  const {
+    similarTo: { title: newTitle, reason: newReason },
+  } = newOutput;
 
   const similarToChanges: Record<
     string,
     { readonly before: unknown; readonly after: unknown }
   > = {};
 
-  if (oldSimilar.title !== newSimilar.title) {
+  if (title !== newTitle) {
     similarToChanges.title = {
-      before: oldSimilar.title,
-      after: newSimilar.title,
+      before: title,
+      after: newTitle,
     };
   }
 
-  if (oldSimilar.reason !== newSimilar.reason) {
+  if (reason !== newReason) {
     similarToChanges.reason = {
-      before: oldSimilar.reason,
-      after: newSimilar.reason,
+      before: reason,
+      after: newReason,
     };
   }
 
@@ -249,22 +231,22 @@ async function main(): Promise<void> {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    console.log("🔍 Reading enriched article from cloud...");
+    console.log("📘 Reading enriched article...");
     const article = await readJsonFromCloud<Article>(
-      "src/prismicLib/enriched-article.json"
+      "src/prismicLib/enriched-article.json",
     );
 
-    console.log("📚 Reading previous articles from cloud...");
+    console.log("📚 Reading previous articles...");
     const previousArticles = await readJsonFromCloud<readonly Article[]>(
-      "src/prismicLib/previous-articles.json"
+      "src/prismicLib/previous-articles.json",
     );
 
-    console.log("🤖 Analyzing semantic similarity with OpenAI...");
-    const similarityAnalysis = await findSimilarArticle(
+    console.log("🤖 Analyzing similarity...");
+    const similarityAnalysis = await findSimilarArticle({
       article,
       previousArticles,
-      openai
-    );
+      openai,
+    });
 
     const enrichedOutput: EnrichedArticle = {
       ...article,
@@ -279,15 +261,17 @@ async function main(): Promise<void> {
 
     let diff: Diff = { changed: {} };
     try {
-      console.log("\n🔍 Checking for existing output...");
-      const existingOutput = await readJsonFromCloud<EnrichedArticle>(
-        "output.json"
-      );
-      diff = generateDiff(existingOutput, enrichedOutput);
+      console.log("\n👀 Checking for existing output...");
+      const existingOutput =
+        await readJsonFromCloud<EnrichedArticle>("output.json");
+      diff = generateDiff({
+        output: existingOutput,
+        newOutput: enrichedOutput,
+      });
       console.log("\n🧾 Diff:");
       console.log(JSON.stringify(diff, null, 2));
     } catch {
-      console.log("ℹ️  No existing output found, skipping diff generation.");
+      console.log("ℹ⏭️ No existing output, skipping diff generation.");
       console.log("\n🧾 Diff:");
       console.log(JSON.stringify(diff, null, 2));
     }
@@ -298,7 +282,7 @@ async function main(): Promise<void> {
       writeJsonToCloud("diff.json", diff),
     ]);
 
-    console.log("✨ Done! Files written successfully.");
+    console.log("✅ Files written successfully.");
   } catch (error) {
     console.error("❌ Error:", error);
     process.exit(1);

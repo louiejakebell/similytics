@@ -8,7 +8,7 @@
     "Configure routes and components to dynamically render content from Prismic"
   ],
   "similarTo": {
-    "title": null,
-    "reason": "The new article focuses on building a blog using Next.js and Prismic, which involves web development concepts such as dynamic routing and styling with Tailwind CSS. The previous articles primarily cover topics related to accessibility, CSS layout, performance optimization, debugging, and AI integration, none of which directly relate to the specific technologies or use cases presented in the new article. The lack of overlap in core topics, target audience, and practical applications results in a semantic similarity score below 40% for all previous articles."
+    "title": "Building a SvelteKit Marketing Site",
+    "reason": "The new article focuses on building a blog using Next.js, while the most similar article discusses building a marketing site with SvelteKit. Both articles share a common theme of web development and involve structured content modeling and reusable components. They target a similar audience of developers looking to create dynamic web applications. Although the technologies differ (Next.js vs. SvelteKit), the core concepts of structuring content and creating scalable applications align closely, making it the most semantically similar article."
   }
 }
